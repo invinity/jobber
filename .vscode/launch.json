@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-JobberSpringApp<springboot-app>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "me.mattpitts.jobber.application.JobberSpringApp",
+            "projectName": "springboot-app",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-JobberSpringApp<springboot>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "me.mattpitts.jobber.application.JobberSpringApp",
+            "projectName": "springboot",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

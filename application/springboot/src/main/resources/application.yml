@@ -1,0 +1,12 @@
+spring:
+  cloud:
+    aws:
+      credentials:
+        instance-profile: true
+springdoc:
+  allowed-locales:
+    - en
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
