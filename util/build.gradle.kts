@@ -9,4 +9,5 @@ plugins {
 }
 
 dependencies {
+    testImplementation(libs.bundles.testgoodies)
 }

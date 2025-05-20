@@ -8,7 +8,7 @@ import java.nio.file.Path;
 public class UrlToPdfConverter {
     public byte[] convert(URL url) throws IOException, InterruptedException {
         Path tempFile = Files.createTempFile("jobber-print-to-pdf", ".pdf");
-        ProcessBuilder processBuilder = new ProcessBuilder("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", "--headless", "--run-all-compositor-stages-before-draw", "--print-to-pdf=" + tempFile.toString(), url.toString());
+        ProcessBuilder processBuilder = new ProcessBuilder(ChromePathFinder.findChromePath(), "--headless", "--run-all-compositor-stages-before-draw", "--print-to-pdf=" + tempFile.toString(), url.toString());
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
         process.waitFor();

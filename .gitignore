@@ -5,4 +5,4 @@
 **/build/**
 **/bin/**
 
-application/spring-boot/src/main/resources/application-localcreds.yml
+application/springboot/src/main/resources/application-localcreds.yml
