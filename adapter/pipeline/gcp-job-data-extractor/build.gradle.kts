@@ -10,5 +10,6 @@ plugins {
 
 dependencies {
     implementation(project(":domain"))
+    implementation("com.google.cloud:google-cloud-document-ai:2.67.0")
     testImplementation(libs.bundles.testgoodies)
 }

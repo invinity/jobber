@@ -1,14 +1,15 @@
 package me.mattpitts.jobber.util;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import static org.junit.jupiter.api.Assertions.*;
-import java.awt.Desktop;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Unit tests for the UrlToPdfConverter class.
@@ -32,7 +33,6 @@ class UrlToPdfConverterTest {
         Path tempPdf = tempDir.resolve("output.pdf");
         Files.write(tempPdf, pdfData);
         assertTrue(Files.exists(tempPdf), "PDF file should be created");
-        Desktop.getDesktop().open(tempPdf.toFile());
     }
 
     @Test

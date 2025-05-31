@@ -29,3 +29,15 @@ reporting {
 tasks.check {
     dependsOn(tasks.named<JacocoReport>("testCodeCoverageReport")) 
 }
+
+tasks.named<JacocoReport>("testCodeCoverageReport") {
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+    }
+    doLast {
+        logger.lifecycle("Jacoco test code coverage report generated at: ${reports.html.outputLocation.get()}")
+        java.awt.Desktop.getDesktop()?.browse(file("${reports.html.outputLocation.get()}/index.html").toURI())
+    }
+}

@@ -3,6 +3,9 @@
  *
  * This project uses @Incubating APIs which are subject to change.
  */
+import org.gradle.api.tasks.testing.TestDescriptor
+import org.gradle.api.tasks.testing.TestResult
+import java.awt.Desktop
 
 plugins {
     // Apply common plugins for java projects.
@@ -12,8 +15,8 @@ plugins {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.3")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.+")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.+")
     constraints {
         // Define dependency versions as constraints
     }
@@ -24,10 +27,11 @@ testing {
         // Configure the built-in test suite
         val test by getting(JvmTestSuite::class) {
             // Use JUnit Jupiter test framework
-            useJUnitJupiter("5.10.3")
+            useJUnitJupiter("5.10.+")
         }
     }
 }
+
 
 tasks.withType<Test>().configureEach {
     ignoreFailures = true
@@ -35,6 +39,19 @@ tasks.withType<Test>().configureEach {
     testLogging {
         showStandardStreams = true
     }
+    reports {
+        html.required.set(true)
+        junitXml.required.set(true)
+    }
+    var testReportHtmlIndex = file("${reports.html.outputLocation.get()}/index.html").toURI()
+    afterTest(KotlinClosure2<TestDescriptor, TestResult, Unit>({ descriptor: TestDescriptor, result: TestResult ->
+        // open the html report in the browser after a test has failures
+        if (result.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
+            logger.lifecycle("Test failed: ${descriptor.name}")
+            Desktop.getDesktop()?.browse(testReportHtmlIndex)
+        }
+        null
+    }))
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

@@ -3,53 +3,26 @@ package me.mattpitts.jobber.util;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
 
 public final class ChromePathFinder {
+
+    public static final List<String> SEARCH_PATHS =
+            List.of(
+                "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+                "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+                System.getenv("LOCALAPPDATA") + "\\Google\\Chrome\\Application\\chrome.exe",
+                "/usr/bin/google-chrome",
+                "/usr/bin/chromium-browser", 
+                "/opt/google/chrome/google-chrome");
 
     private ChromePathFinder() {
         // Prevent instantiation
     }
 
-    public static String findChromePath() {
-        String os = System.getProperty("os.name").toLowerCase();
-
-        if (os.contains("win")) {
-            return findWindowsChromePath();
-        } else if (os.contains("linux")) {
-            return findLinuxChromePath();
-        } else {
-            return null;
-        }
-    }
-
-    private static String findWindowsChromePath() {
-        String[] paths = {
-            "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-            "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
-            System.getenv("LOCALAPPDATA") + "\\Google\\Chrome\\Application\\chrome.exe"
-        };
-
-        for (String path : paths) {
-            if (checkPath(path)) {
-                return path;
-            }
-        }
-        return null;
-    }
-
-    private static String findLinuxChromePath() {
-        String[] paths = {
-            "/usr/bin/google-chrome",
-            "/usr/bin/chromium-browser",
-            "/opt/google/chrome/google-chrome"
-        };
-
-        for (String path : paths) {
-           if (checkPath(path)) {
-                return path;
-            }
-        }
-         return null;
+    public static Optional<String> findChromePath() {
+        return SEARCH_PATHS.stream().filter(ChromePathFinder::checkPath).findFirst();
     }
 
     private static boolean checkPath(String path) {

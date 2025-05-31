@@ -16,5 +16,5 @@ class JobberSpringAppTest {
         assertDoesNotThrow(() -> {
             // No code needed here, the assertion is that no exception is thrown.
         });
-    }
+    }   
 }

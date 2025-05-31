@@ -42,26 +42,26 @@ public class DynamoDbJobPostingWirings {
     }
 
     @Bean
-    public ExtractJobData<DyDbJobPostingData> extractJobData(
+    public ExtractJobData<DyDbJobPostingData> extractJobDataUseCase(
             JobPostingDataExtractor<DyDbJobPostingData> jobPostingDataExtractor) {
         return ExtractJobData.<DyDbJobPostingData>builder()
                 .jobDataExtractor(jobPostingDataExtractor).build();
     }
 
     @Bean
-    public StoreJobPosting<DyDbJobPosting> storeJobPosting(
+    public StoreJobPosting<DyDbJobPosting> storeJobPostingUseCase(
             JobPostingRepository<DyDbJobPosting> jobRepository) {
         return StoreJobPosting.<DyDbJobPosting>builder().jobRepository(jobRepository).build();
     }
 
     @Bean
-    public ListJobPostings<DyDbJobPosting> listJobPostings(
+    public ListJobPostings<DyDbJobPosting> listJobPostingsUseCase(
             JobPostingRepository<DyDbJobPosting> jobRepository) {
         return ListJobPostings.<DyDbJobPosting>builder().jobRepository(jobRepository).build();
     }
 
     @Bean
-    public CreateJobPosting<DyDbJobPosting, DyDbJobPostingData> createJobPosting(
+    public CreateJobPosting<DyDbJobPosting, DyDbJobPostingData> createJobPostingUseCase(
             ConvertUrlToDocument convertUrlToDocument,
             ExtractJobData<DyDbJobPostingData> extractJobData,
             StoreJobPosting<DyDbJobPosting> storeJobPosting,

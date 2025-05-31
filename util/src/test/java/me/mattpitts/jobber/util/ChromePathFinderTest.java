@@ -1,16 +1,15 @@
 package me.mattpitts.jobber.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -18,39 +17,36 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ChromePathFinderTest {
 
     @Test
-    @EnabledOnOs(OS.WINDOWS)
-    void findChromePath_windows_returnsPathIfFound() throws IOException {
-        try (var mockedStatic = mockStatic(Files.class)) {
+    void findChromePath_should_return_a_valid_window_path_if_found() throws IOException {
+        try (var mockFiles = mockStatic(Files.class)) {
             Path fakePath = Paths.get("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe");
-            mockedStatic.when(() -> Files.exists(fakePath)).thenReturn(true);
-            mockedStatic.when(() -> Files.isExecutable(fakePath)).thenReturn(true);
-
-            String path = ChromePathFinder.findChromePath();
-            assertEquals("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", path);
+            mockFiles.when(() -> Files.exists(fakePath)).thenReturn(true);
+            mockFiles.when(() -> Files.isExecutable(fakePath)).thenReturn(true);
+            Optional<String> path = ChromePathFinder.findChromePath();
+            assertThat(path,
+                    is(Optional.of("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe")));
         }
     }
 
     @Test
-    @EnabledOnOs(OS.LINUX)
-    void findChromePath_linux_returnsPathIfFound() throws IOException {
-        try (var mockedStatic = mockStatic(Files.class)) {
+    void findChromePath_should_return_a_valid_linux_path_if_found() throws IOException {
+        try (var mockFiles = mockStatic(Files.class)) {
             Path fakePath = Paths.get("/usr/bin/google-chrome");
-            mockedStatic.when(() -> Files.exists(fakePath)).thenReturn(true);
-            mockedStatic.when(() -> Files.isExecutable(fakePath)).thenReturn(true);
-
-            String path = ChromePathFinder.findChromePath();
-            assertEquals("/usr/bin/google-chrome", path);
+            mockFiles.when(() -> Files.exists(fakePath)).thenReturn(true);
+            mockFiles.when(() -> Files.isExecutable(fakePath)).thenReturn(true);
+            Optional<String> path = ChromePathFinder.findChromePath();
+            assertThat(path, is(Optional.of("/usr/bin/google-chrome")));
         }
     }
 
     @Test
-    void findChromePath_returnsNullIfNotFound() throws IOException {
-        try (var mockedStatic = mockStatic(Files.class)) {
-            mockedStatic.when(() -> Files.exists(any(Path.class))).thenReturn(false);
-            mockedStatic.when(() -> Files.isExecutable(any(Path.class))).thenReturn(false);
+    void findChromePath_should_return_empty_if_not_found() throws IOException {
+        try (var mockFiles = mockStatic(Files.class)) {
+            mockFiles.when(() -> Files.exists(any(Path.class))).thenReturn(false);
+            mockFiles.when(() -> Files.isExecutable(any(Path.class))).thenReturn(false);
 
-            String path = ChromePathFinder.findChromePath();
-            assertNull(path);
+            Optional<String> path = ChromePathFinder.findChromePath();
+            assertThat(path, is(Optional.empty()));
         }
     }
 }
