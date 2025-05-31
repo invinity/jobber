@@ -93,6 +93,7 @@ jobs:
         with:
           path: ./build/libs/*.jar
           key: ${{ github.run_id }}-built-jars
+          fail-on-cache-miss: true
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -143,7 +144,7 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
