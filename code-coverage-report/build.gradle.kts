@@ -36,8 +36,9 @@ tasks.named<JacocoReport>("testCodeCoverageReport") {
         html.required.set(true)
         csv.required.set(false)
     }
+    var testReportHtmlIndex = file("${reports.html.outputLocation.get()}/index.html").toURI()
     doLast {
-        logger.lifecycle("Jacoco test code coverage report generated at: ${reports.html.outputLocation.get()}")
-        java.awt.Desktop.getDesktop()?.browse(file("${reports.html.outputLocation.get()}/index.html").toURI())
+        logger.lifecycle("Jacoco test code coverage report generated at: ${testReportHtmlIndex}")
+        java.awt.Desktop.getDesktop()?.browse(testReportHtmlIndex)
     }
 }
