@@ -135,6 +135,17 @@ jobs:
 #           cluster: ${{ vars.ECS_CLUSTER }}
 #           wait-for-service-stability: true
 
+  test:
+    name: Execute Container Tests
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: read
+    steps:
+      - name: Run Tests
+        run: |
+          docker run --rm my-app:latest -- test_command  # Replace with your test command
+
   dependency-submission:
     runs-on: ubuntu-latest
     permissions:
