@@ -39,6 +39,7 @@ tasks.named<JacocoReport>("testCodeCoverageReport") {
     var testReportHtmlIndex = file("${reports.html.outputLocation.get()}/index.html").toURI()
     doLast {
         logger.lifecycle("Jacoco test code coverage report generated at: ${testReportHtmlIndex}")
-        java.awt.Desktop.getDesktop()?.browse(testReportHtmlIndex)
+        if (java.awt.Desktop.isDesktopSupported() && java.awt.Desktop.getDesktop().isSupported(java.awt.Desktop.Action.BROWSE))
+            java.awt.Desktop.getDesktop()?.browse(testReportHtmlIndex)
     }
 }
