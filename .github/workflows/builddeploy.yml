@@ -91,7 +91,7 @@ jobs:
       - name: Restore Built JARs from Cache
         uses: actions/cache/restore@v4
         with:
-          path: ./build/libs/*.jar
+          path: application/springboot/build/libs/*.jar
           key: ${{ github.run_id }}-built-jars
           fail-on-cache-miss: true
 
