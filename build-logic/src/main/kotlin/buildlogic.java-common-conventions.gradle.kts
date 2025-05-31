@@ -48,7 +48,7 @@ tasks.withType<Test>().configureEach {
         // open the html report in the browser after a test has failures
         if (result.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
             logger.lifecycle("Test failed: ${descriptor.name}")
-            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(java.awt.Desktop.Action.BROWSE))
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
                 Desktop.getDesktop()?.browse(testReportHtmlIndex)
         }
         null
