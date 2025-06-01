@@ -47,7 +47,7 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: springboot-application
+        name: springboot-jars-{{ github.run_id }}-{{ github.run_attempt }}
         path: application/springboot/build/libs/*.jar
 
     - name: Gradle Jacoco Test Report
@@ -92,7 +92,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: sprintboot-application
+          name: springboot-jars-{{ github.run_id }}-{{ github.run_attempt }}
           path: application/springboot/build/libs
 
       - name: Configure AWS credentials
