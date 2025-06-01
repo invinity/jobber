@@ -44,11 +44,11 @@ jobs:
         chmod +x gradlew
         ./gradlew build
 
-    - name: Cache Built JARs
-      uses: actions/cache/save@v4
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
       with:
-        path: ./application/springboot/build/libs/*.jar
-        key: ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}-built-jars
+        name: springboot-application
+        path: application/springboot/build/libs/*.jar
 
     - name: Gradle Jacoco Test Report
       run: ./gradlew jacocoTestReport
@@ -80,6 +80,7 @@ jobs:
     needs: build
     permissions:
       contents: read
+      id-token: write
     environment: |-
       ${{
         github.ref_name == 'main' && 'production'
@@ -88,12 +89,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Restore Built JARs from Cache
-        uses: actions/cache/restore@v4
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
         with:
-          path: application/springboot/build/libs/*.jar
-          key: ${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}-built-jars
-          fail-on-cache-miss: true
+          name: sprintboot-application
+          path: application/springboot/build/libs
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
