@@ -1,6 +1,7 @@
 package me.mattpitts.jobber.repository.dynamodb;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
 import org.springframework.data.repository.CrudRepository;
 import lombok.NonNull;
@@ -19,9 +20,12 @@ public class DyDbJobPostingRepository implements JobPostingRepository<DyDbJobPos
 
     @Override
     public List<DyDbJobPosting> findAll() {
-        return StreamSupport.stream(crudRepository.findAll().spliterator(), false)
-                .toList();
+        return StreamSupport.stream(crudRepository.findAll().spliterator(), false).toList();
     }
 
-    
+    @Override
+    public Optional<DyDbJobPosting> findById(@NonNull String id) {
+        return this.crudRepository.findById(id);
+    }
+
 }

@@ -1,46 +1,46 @@
 package me.mattpitts.jobber.application.rest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import me.mattpitts.jobber.controller.JobPostingController;
 import me.mattpitts.jobber.domain.jobs.impl.DefaultJobPosting;
 import me.mattpitts.jobber.domain.jobs.impl.DefaultJobPostingData;
 
 @WebMvcTest(JobPostingResource.class)
-@SpringBootTest
-public class JobPostingResourceTest {
+class JobPostingResourceTest {
 
     @MockitoBean
     JobPostingController<DefaultJobPosting, DefaultJobPostingData> mockController;
 
     @InjectMocks
-    private JobPostingResource underTest;
+    JobPostingResource underTest;
 
-    private MockMvc mockMvc;
+    @Autowired
+    MockMvc mockMvc;
 
     /**
      * Tests the search method of JobPostingResource. Verifies that the method returns a
      * ResponseEntity with OK status and the result of jobPostingController.findAll().
      */
     @Test
-    public void testSearchReturnsAllJobPostings() throws Exception {
+    void GET_to_job_postings_should_return_all_job_postings() throws Exception {
         when(mockController.findAll()).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/job-postings"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json("[]"));
+        mockMvc.perform(get("/job-postings")).andExpect(status().isOk())
+                .andExpect(content().json("[]"));
 
         verify(mockController).findAll();
     }
@@ -50,14 +50,14 @@ public class JobPostingResourceTest {
      * handles empty input correctly.
      */
     @Test
-    public void test_createJobPosting_emptyUrl() throws Exception {
+    void POST_to_job_postings_should_return_bad_request_when_url_is_empty() throws Exception {
         when(mockController.create(anyString()))
                 .thenThrow(new IllegalArgumentException("URL cannot be empty"));
 
-        ResponseEntity<Object> response = underTest.createJobPosting("");
-
-        assertEquals(400, response.getStatusCode());
-        assertEquals("URL cannot be empty", response.getBody());
+        mockMvc.perform(post("/job-postings").param("url", "")).andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("URL cannot be empty"))
+                .andExpect(jsonPath("$.errorType")
+                        .value(IllegalArgumentException.class.getSimpleName()));
     }
 
     /**
@@ -65,14 +65,15 @@ public class JobPostingResourceTest {
      * verifies that the method handles exceptions thrown by the controller.
      */
     @Test
-    public void test_createJobPosting_exceptionDuringCreation() throws Exception {
+    void POST_to_job_postings_should_return_server_error_when_controller_throws_exception()
+            throws Exception {
         when(mockController.create(anyString()))
                 .thenThrow(new RuntimeException("Error creating job posting"));
 
-        ResponseEntity<Object> response = underTest.createJobPosting("https://example.com/job");
-
-        assertEquals(500, response.getStatusCode());
-        assertEquals("Error creating job posting", response.getBody());
+        mockMvc.perform(post("/job-postings").param("url", "https://example.com/job/12345"))
+                .andExpect(status().is5xxServerError())
+                .andExpect(jsonPath("$.message").value("Error creating job posting"))
+                .andExpect(jsonPath("$.errorType").value(RuntimeException.class.getSimpleName()));
     }
 
     /**
@@ -81,18 +82,14 @@ public class JobPostingResourceTest {
      * controller.
      */
     @Test
-    public void test_createJobPosting_returnsCreatedJobPosting() throws Exception {
-        // Arrange
-        JobPostingResource resource = new JobPostingResource(mockController);
-        String url = "https://example.com/job";
-        DefaultJobPosting createdJobPosting = DefaultJobPosting.builder().build();
+    void POST_to_job_postings_should_return_a_created_response_with_a_valid_request()
+            throws Exception {
+        String url = "https://example.com/job/12345";
+        DefaultJobPosting createdJobPosting = DefaultJobPosting.builder().url(url).key("mykey").build();
         when(mockController.create(url)).thenReturn(createdJobPosting);
-
-        // Act
-        ResponseEntity<Object> response = resource.createJobPosting(url);
-
-        // Assert
-        assertEquals(ResponseEntity.ok(createdJobPosting), response);
+        mockMvc.perform(post("/job-postings").param("url", url)).andExpect(status().isCreated())
+                .andExpect(header().string("Location",
+                        "http://localhost/job-postings/" + createdJobPosting.getKey()));
     }
 
 }
